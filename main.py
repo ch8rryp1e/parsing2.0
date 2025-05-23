@@ -46,7 +46,7 @@ if current["text"]:
     current["is_order"] = check_if_order(current["text"])
     messages.append(current.copy())
 
-# Create DataFrame
+
 df = pd.DataFrame(messages)
 df.rename(columns={
     "date": "Date",
@@ -57,13 +57,12 @@ df.rename(columns={
     "is_order": "IsOrder"
 }, inplace=True)
 
-# Filter only orders
+
 df_orders = df[df["IsOrder"] == True]
 
-# Save only orders to Excel
+
 df_orders.to_excel(excel_output, index=False)
 
-# Save text outputs
 with open(text_output_all, 'w', encoding='utf-8') as all_file, \
      open(text_output_orders, 'w', encoding='utf-8') as order_file:
 
