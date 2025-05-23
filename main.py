@@ -6,9 +6,7 @@ excel_output = "parsed_chat_data.xlsx"
 text_output_orders = "orders_only.txt"
 text_output_all = "all_messages.txt"
 
-
 order_keywords = ["заказ №", "имя", "номер"]
-
 
 msg_pattern = re.compile(r'^(\d{2}\.\d{2}\.\d{4}), (\d{2}:\d{2}) - (.*?): (.*)')
 phone_pattern = re.compile(r'(\+7[\d\s\-]{10,15}|\b87\d{9}\b)')
@@ -44,12 +42,11 @@ with open(filename, 'r', encoding='utf-8') as f:
                 if phone_match:
                     current["phone"] = phone_match.group(1)
 
-
 if current["text"]:
     current["is_order"] = check_if_order(current["text"])
     messages.append(current.copy())
 
-
+# Create DataFrame
 df = pd.DataFrame(messages)
 df.rename(columns={
     "date": "Date",
@@ -60,9 +57,13 @@ df.rename(columns={
     "is_order": "IsOrder"
 }, inplace=True)
 
-df.to_excel(excel_output, index=False)
+# Filter only orders
+df_orders = df[df["IsOrder"] == True]
 
+# Save only orders to Excel
+df_orders.to_excel(excel_output, index=False)
 
+# Save text outputs
 with open(text_output_all, 'w', encoding='utf-8') as all_file, \
      open(text_output_orders, 'w', encoding='utf-8') as order_file:
 
@@ -72,6 +73,4 @@ with open(text_output_all, 'w', encoding='utf-8') as all_file, \
         if row["IsOrder"]:
             order_file.write(line)
 
-
-print(f"Data has been parsed and saved to {excel_output}, {text_output_orders}, and {text_output_all}.")
-
+print(f"Orders have been filtered and saved to {excel_output}")
